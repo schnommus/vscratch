@@ -16,18 +16,28 @@ int main(int argc, char **argv) {
     tb->trace(trace, 99);
     trace->open("trace.vcd");
 
-    for(uint8_t ticks = 0; ticks != 8; ++ticks) {
+    for(uint8_t ticks = 0; ticks != 70; ++ticks) {
 
-        tb->x   = !!(ticks & (1 << 0));
-        tb->y   = !!(ticks & (1 << 1));
-        tb->cin = !!(ticks & (1 << 2));
+        if(ticks < 34) {
+            tb->din = ticks;
+            tb->write = 1;
+            tb->read = 0;
+        } else {
+            tb->din = 0;
+            tb->write = 0;
+            tb->read = 1;
+        }
+
+
+        tb->clock = 0;
         tb->eval();
-
-        printf("%d + %d + %d = %d%d\n",
-                tb->x, tb->y, tb->cin,
-                tb->cout, tb->a);
-
         trace->dump(10*ticks);
+
+        tb->clock = 1;
+        tb->eval();
+        trace->dump(10*ticks + 5);
+
+        printf("[n_elements %d] din: %d dout: %d\n", tb->n_elements, tb->din, tb->dout);
     }
 
     trace->close();
