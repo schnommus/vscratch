@@ -1,0 +1,9 @@
+# read design
+read_verilog module_impl.v
+hierarchy -check
+
+# high-level synthesis
+proc; opt; fsm; opt; memory; opt
+
+# plot it
+show
